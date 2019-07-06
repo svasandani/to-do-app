@@ -11,6 +11,7 @@ export class TodoComponent implements OnInit {
 
   displayedColumns = ['id', 'contents', 'completed']
 
+  currentTodo: Todo;
   activeTodos: Todo[];
   completedTodos: Todo[];
   todoContents: string;
@@ -51,6 +52,21 @@ export class TodoComponent implements OnInit {
     this.todoService.deleteTodo(todo).subscribe(() => {
       this.getAll();
     })
+  }
+
+  doControlEvent($event) {
+    console.log($event);
+    if ($event == "") {
+      this.currentTodo = undefined;
+    } else {
+      var newTodo: Todo = { id: $event, contents: "", completed: false }
+      this.completeTodo(newTodo);
+    }
+  }
+
+  doDeleteEvent($event) {
+    var newTodo: Todo = { id: $event, contents: "", completed: false }
+    this.deleteTodo(newTodo);
   }
 
 }

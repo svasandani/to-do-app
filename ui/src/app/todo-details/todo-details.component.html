@@ -1,0 +1,19 @@
+<mat-card fxLayout="column" fxLayoutGap="20px">
+  <button mat-button>
+    <mat-icon (click)="doControlEvent('')" style="vertical-align: middle">keyboard_backspace</mat-icon>
+  </button>
+  <h4>Contents</h4>
+  <span>{{ todo.contents }}</span>
+  <h4>ID</h4>
+  <span>{{ todo.id }}</span>
+  <div class="actions" fxLayout="row" fxLayoutGap="0px" style="align-items: center">
+    <!-- <mat-checkbox aria-label="Completed" (click)="completeTodo(todo)" style="vertical-align: middle" checked="true" disabled="true"></mat-checkbox> -->
+    <button mat-button>
+      <mat-icon aria-label="Completed" (click)="doControlEvent(todo.id)" *ngIf="(todo.completed==false&&switch==false)||(todo.completed==true&&switch==true)" style="vertical-align: middle; color: black">check_circle_outline</mat-icon>
+      <mat-icon aria-label="Completed" (click)="doControlEvent(todo.id)" *ngIf="(todo.completed==true&&switch==false)||(todo.completed==false&&switch==true)" style="vertical-align: middle; color: green">check_circle</mat-icon>
+    </button>
+    <button mat-button>
+      <mat-icon (click)="deleteControlEvent(todo.id)" style="vertical-align: middle">delete</mat-icon>
+    </button>
+  </div>
+</mat-card>

@@ -1,1 +1,2 @@
-<app-todo></app-todo>
+<app-home *ngIf="showTodo==false" (showTodoEvent)="receiveTodoKey($event)"></app-home>
+<app-todo *ngIf="showTodo==true"></app-todo>

@@ -8,8 +8,29 @@
 }
 
 .mat-column-id {
-  width: 200px !important;
-  text-overflow: ellipsis !important;
+  width: 0px !important;
+  text-overflow: scroll !important;
+}
+
+button.mat-button {
+  min-width: 40px !important;
+  max-width: 40px !important;
+  padding: 0px !important;
+}
+
+.mat-column-completed {
+  width: 80px !important;
+}
+
+@media (max-width: 800px) {
+  .mat-column-id {
+    width: 0px !important;
+    text-overflow: scroll !important;
+  }
+
+  .addField {
+    grid-template-columns: 25fr 15fr;
+  }
 }
 
 table {
@@ -20,7 +41,7 @@ table {
 th, td {
   overflow: hidden;
   width: auto;
-  text-overflow: ellipsis;
+  text-overflow: scroll;
   white-space: nowrap;
 }
 

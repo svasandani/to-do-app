@@ -10,10 +10,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { TodoComponent } from './todo/todo.component';
+import { TodoDetailsComponent } from './todo-details/todo-details.component';
 
 @NgModule({
   declarations: [
-    AppComponent, HomeComponent, TodoComponent
+    AppComponent, HomeComponent, TodoComponent, TodoDetailsComponent
   ],
   imports: [
     BrowserModule, FormsModule, MaterialModule, BrowserAnimationsModule, FlexLayoutModule, HttpClientModule

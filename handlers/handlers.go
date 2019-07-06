@@ -61,8 +61,14 @@ func CompleteTodoHandler(w http.ResponseWriter, r *http.Request) {
     http.Error(w, err.Error(), http.StatusInternalServerError)
   }
 
-  if err = todo.Complete(todoItem.ID); err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
+  if truth, _ := todo.IsIncomplete(todoItem.ID); (truth) {
+    if err = todo.Complete(todoItem.ID); err != nil {
+      http.Error(w, err.Error(), http.StatusInternalServerError)
+    }
+  } else {
+   if err = todo.Uncomplete(todoItem.ID); err != nil {
+     http.Error(w, err.Error(), http.StatusInternalServerError)
+   }
   }
 }
 

@@ -65,6 +65,29 @@ func Complete(id string) error {
   return nil
 }
 
+// mark todo as not completed
+func Uncomplete(id string) error {
+  index, err := findTodoByID(id)
+  if err != nil {
+    return err
+  }
+  markUncompletedByIndex(index)
+  return nil
+}
+
+// check if already completed
+func IsIncomplete(id string) (bool, error) {
+  index, err := findTodoByID(id)
+  if err != nil {
+    return false, err
+  }
+  if list[index].Completed == true {
+    return false, nil
+  } else {
+    return true, nil
+  }
+}
+
 //// private functions
 
 // create new todo item
@@ -94,6 +117,13 @@ func removeTodoByIndex(index int) {
 func markCompletedByIndex(index int) {
   mtx.Lock()
   list[index].Completed = true
+  mtx.Unlock()
+}
+
+// mark a todo not completed based on its index
+func markUncompletedByIndex(index int) {
+  mtx.Lock()
+  list[index].Completed = false
   mtx.Unlock()
 }
 

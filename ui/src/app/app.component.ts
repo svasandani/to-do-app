@@ -7,4 +7,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'ui';
+
+  showTodo: boolean = false;
+
+  receiveTodoKey($event) {
+    console.log("hi")
+    this.showTodo = $event;
+  }
 }

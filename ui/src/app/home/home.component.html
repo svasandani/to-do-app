@@ -1,4 +1,10 @@
-<mat-card fxLayout="column" fxLayoutGap="20px" style="width: 50%">
+<div class="content-wrap" fxLayout="column" fxLayoutGap="20px">
   <mat-toolbar color="primary">A Simple Todo App</mat-toolbar>
-  <a mat-button color="secondary" routerLink="./todo">Show Todo List</a>
-</mat-card>
+  <mat-card fxLayout="column" fxLayoutGap="20px" fxFlex="100%">
+    <mat-form-field>
+      <input matInput (keyup.enter)="showTodos(inputForm, inputPlaceholder); inputForm.value=''" type="text" #inputForm>
+      <mat-placeholder class="placeholder" #inputPlaceholder>Enter your key</mat-placeholder>
+    </mat-form-field>
+    <a mat-button color="secondary" (click)="showTodos(inputForm, inputPlaceholder); inputForm.value=''">Show Todo List</a>
+  </mat-card>
+</div>
