@@ -65,6 +65,7 @@ export class TodoComponent implements OnInit {
   }
 
   doDeleteEvent($event) {
+    this.currentTodo = undefined;
     var newTodo: Todo = { id: $event, contents: "", completed: false }
     this.deleteTodo(newTodo);
   }
