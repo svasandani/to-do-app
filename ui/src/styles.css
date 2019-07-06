@@ -1,0 +1,14 @@
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+mat-toolbar {
+  justify-content: center;
+}
+
+mat-card {
+  margin: 0 auto;
+}

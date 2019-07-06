@@ -1,0 +1,29 @@
+.addField {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  grid-template-columns: 3fr 1fr;
+  width: 100%;
+  grid-gap: 20px;
+}
+
+.mat-column-id {
+  width: 200px !important;
+  text-overflow: ellipsis !important;
+}
+
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+th, td {
+  overflow: hidden;
+  width: auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+mat-icon {
+  cursor: pointer;
+}
