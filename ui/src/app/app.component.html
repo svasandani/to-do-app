@@ -1,2 +1,2 @@
 <app-home *ngIf="showTodo==false" (showTodoEvent)="receiveTodoKey($event)"></app-home>
-<app-todo *ngIf="showTodo==true"></app-todo>
+<app-todo *ngIf="showTodo==true" (hideTodoEvent)="hideTodos($event)" [dbKey]="databaseKey"></app-todo>

@@ -21,6 +21,14 @@ export class TodoService {
   deleteTodo(todo: Todo) {
     return this.httpClient.delete(environment.gateway + '/todo/?id=' + todo.id);
   }
+
+  deleteTable(key) {
+    return this.httpClient.delete(environment.gateway + '/todo?key=' + key);
+  }
+
+  setKey(key) {
+    return this.httpClient.get(environment.gateway + '/init/?key=' + key);
+  }
 }
 
 export class Todo {

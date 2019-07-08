@@ -11,6 +11,7 @@ func todoHandlers(w http.ResponseWriter, r *http.Request) {
     case http.MethodGet: handlers.GetTodoListHandler(w, r)
     case http.MethodPost: handlers.AddTodoHandler(w, r)
     case http.MethodPut: handlers.CompleteTodoHandler(w, r)
+    case http.MethodDelete: handlers.DeleteTableHandler(w, r)
     case http.MethodOptions: handlers.OptionsHandler(w, r)
   }
 }
@@ -18,7 +19,7 @@ func todoHandlers(w http.ResponseWriter, r *http.Request) {
 func main() {
   mux := http.NewServeMux()
 
-  mux.HandleFunc("/", handlers.IndexHandler)
+  mux.HandleFunc("/init/", handlers.IndexHandler)
   mux.HandleFunc("/todo", todoHandlers)
   mux.HandleFunc("/todo/", handlers.DeleteTodoHandler)
 

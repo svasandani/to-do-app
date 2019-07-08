@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { TodoService, Todo } from '../todo.service';
 
 @Component({
@@ -8,6 +8,8 @@ import { TodoService, Todo } from '../todo.service';
   providers: [TodoService]
 })
 export class TodoComponent implements OnInit {
+  @Output() hideTodoEvent = new EventEmitter<boolean>();
+  @Input('dbKey') key: string;
 
   displayedColumns = ['id', 'contents', 'completed']
 
@@ -15,6 +17,15 @@ export class TodoComponent implements OnInit {
   activeTodos: Todo[];
   completedTodos: Todo[];
   todoContents: string;
+
+  hideTodos() {
+    if (this.completedTodos.length == 0 && this.activeTodos.length == 0) {
+      this.todoService.deleteTable(this.key).subscribe(() => {
+        console.log(this.key);
+      });;
+    }
+    this.hideTodoEvent.emit(false);
+  }
 
   constructor(private todoService: TodoService) { }
 

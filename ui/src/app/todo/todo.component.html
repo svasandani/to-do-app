@@ -1,5 +1,12 @@
 <div class="content-wrap" fxLayout="column" fxLayoutGap="20px" style="margin-bottom: 20px">
-  <mat-toolbar color="primary">A Simple Todo App</mat-toolbar>
+  <mat-toolbar color="primary" fxLayout="row" fxLayoutAlign="space-between">
+    <button mat-button (click)="hideTodos()" class="back-button">
+      <mat-icon style="vertical-align: middle">keyboard_backspace</mat-icon>
+    </button>
+    <span style="display: block; margin: auto 0;">A Simple Todo App</span>
+    <span style="display: block; width: 40px;"></span>
+  </mat-toolbar>
+
   <mat-card fxLayout="column" fxLayoutGap="20px" fxFlex="100%" *ngIf="currentTodo==undefined">
     <h4>Active:</h4>
     <table mat-table [dataSource]="activeTodos">
