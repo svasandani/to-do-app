@@ -1,4 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { TodoService, Todo } from '../todo.service';
 
 @Component({
   selector: 'app-todo-details',
@@ -7,6 +8,8 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
   inputs: ['todo']
 })
 export class TodoDetailsComponent implements OnInit {
+  todo: Todo = this.todo;
+
   switch: boolean = false;
 
   @Output() doEvent = new EventEmitter<string>();

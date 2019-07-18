@@ -5,8 +5,8 @@
 export const environment = {
   production: false,
   gateway: 'http://localhost:2000'
-  // gateway: 'http://192.168.254.110:2000',
-  // gateway: 'http://98bdffc4.ngrok.io'
+  // gateway: 'http://192.168.254.110:2000'
+  // gateway: 'http://54.37.185.191:2000'
 };
 
 /*

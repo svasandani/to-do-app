@@ -37,7 +37,7 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </mat-card>
-  <mat-card fxLayout="column" fxLayoutGap="20px" fxFlex="100%" *ngIf="completedTodos!='' && currentTodo==undefined">
+  <mat-card fxLayout="column" fxLayoutGap="20px" fxFlex="100%" *ngIf="completedTodos.length > 0 && currentTodo==undefined">
     <h4>Completed:</h4>
     <table mat-table [dataSource]="completedTodos">
       <ng-container matColumnDef="id">

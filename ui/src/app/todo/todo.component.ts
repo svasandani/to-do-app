@@ -30,6 +30,8 @@ export class TodoComponent implements OnInit {
   constructor(private todoService: TodoService) { }
 
   ngOnInit() {
+    this.activeTodos = [];
+    this.completedTodos = [];
     this.getAll();
   }
 
@@ -41,8 +43,9 @@ export class TodoComponent implements OnInit {
   }
 
   addTodo() {
+    console.log(this.todoContents.replace("'", "''"));
     var newTodo: Todo = {
-      contents: this.todoContents,
+      contents: this.todoContents.replace("'", "''"),
       id: '',
       completed: false
     };

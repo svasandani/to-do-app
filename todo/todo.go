@@ -5,6 +5,7 @@ import(
   "sync"
   "log"
   "fmt"
+  "strings"
 
   "github.com/rs/xid"
 
@@ -35,6 +36,9 @@ func init() {
 
 func InitializeList(key string) {
   list = []Todo{}
+  if strings.HasPrefix(key, "-") {
+		key = strings.Join(append(strings.Split(key, "")[1:], "n"), "")
+	}
   savedKey = key
   var err error
 
@@ -98,8 +102,9 @@ func DeleteTable(key string) error {
 // add new todo
 func Add(contents string) string {
   t := newTodo(contents)
+  tList := newTodo(strings.ReplaceAll(contents, "''", "'"))
   mtx.Lock()
-  list = append(list, t)
+  list = append(list, tList)
   var bit int
   if t.Completed {
     bit = 1
