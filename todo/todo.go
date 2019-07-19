@@ -19,6 +19,7 @@ var (
   db *sql.DB
   savedKey string
   err error
+  psqlInfo string
 )
 
 const (
@@ -31,12 +32,12 @@ const (
 
 // initialize todo list only once so it doesn't get erased
 func init() {
-  // once.Do(initializeList)
+  // InitializeList()
 }
 
-func InitializeList(key string) {
+func InitializeList() {
+  psqlInfo = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
-  psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
   db, err = sql.Open("postgres", psqlInfo)
   if err != nil {
     log.Fatalf(err.Error())
@@ -64,7 +65,7 @@ func Get(key string) []Todo {
   }
 
   exString := fmt.Sprintf("SELECT 1 FROM %v LIMIT 1", "T" + key)
-  if _, err := db.Query(exString); err == nil {
+  if _, err := db.Exec(exString); err == nil {
     exString2 := fmt.Sprintf("SELECT ID, CONTENTS, COMPLETED FROM %v", "T" + key)
     row, _ := db.Query(exString2)
 

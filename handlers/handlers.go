@@ -28,7 +28,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
     return
   }
   setupResponse(&w, r)
-  todo.InitializeList(r.FormValue("key"))
+  todo.InitializeList()
 }
 
 func GetTodoListHandler(w http.ResponseWriter, r *http.Request) {

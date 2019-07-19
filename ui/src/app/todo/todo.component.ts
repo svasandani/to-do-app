@@ -17,6 +17,7 @@ export class TodoComponent implements OnInit {
   activeTodos: Todo[];
   completedTodos: Todo[];
   todoContents: string;
+  interval: any;
 
   hideTodos() {
     if (this.completedTodos.length == 0 && this.activeTodos.length == 0) {
@@ -33,6 +34,9 @@ export class TodoComponent implements OnInit {
     this.activeTodos = [];
     this.completedTodos = [];
     this.getAll();
+    this.interval = setInterval(() => {
+      this.getAll();
+    }, 1000);
   }
 
   getAll() {
