@@ -11,7 +11,7 @@ func todoHandlers(w http.ResponseWriter, r *http.Request) {
     case http.MethodGet: handlers.GetTodoListHandler(w, r)
     case http.MethodPost: handlers.AddTodoHandler(w, r)
     case http.MethodPut: handlers.CompleteTodoHandler(w, r)
-    case http.MethodDelete: handlers.DeleteTableHandler(w, r)
+    case http.MethodDelete: handlers.DeleteTodoHandler(w, r)
     case http.MethodOptions: handlers.OptionsHandler(w, r)
   }
 }
@@ -20,8 +20,8 @@ func main() {
   mux := http.NewServeMux()
 
   mux.HandleFunc("/init/", handlers.IndexHandler)
-  mux.HandleFunc("/todo", todoHandlers)
-  mux.HandleFunc("/todo/", handlers.DeleteTodoHandler)
+  mux.HandleFunc("/todo", handlers.DeleteTableHandler)
+  mux.HandleFunc("/todo/", todoHandlers)
 
   n := negroni.Classic()
   // n.Use(negroni.HandlerFunc(setupResponse))

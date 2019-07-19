@@ -34,8 +34,9 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 func GetTodoListHandler(w http.ResponseWriter, r *http.Request) {
   setupResponse(&w, r)
   encoder := json.NewEncoder(w)
+  key := r.FormValue("key")
 
-  if err := encoder.Encode(todo.Get()); err != nil {
+  if err := encoder.Encode(todo.Get(key)); err != nil {
     http.Error(w, err.Error(), http.StatusInternalServerError)
   }
 }
@@ -51,8 +52,9 @@ func AddTodoHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   encoder := json.NewEncoder(w)
+  key := r.FormValue("key")
 
-  if err = (encoder.Encode(todo.Add(todoItem.Contents))); err != nil {
+  if err = (encoder.Encode(todo.Add(key, todoItem.Contents))); err != nil {
     http.Error(w, err.Error(), http.StatusInternalServerError)
   }
 }
@@ -61,18 +63,16 @@ func CompleteTodoHandler(w http.ResponseWriter, r *http.Request) {
   setupResponse(&w, r)
   defer r.Body.Close()
 
-  todoItem, err := convertHTTPToTodo(r.Body)
+  todoItem, _ := convertHTTPToTodo(r.Body)
+  // id := r.FormValue("id")
+  key := r.FormValue("key")
 
-  if err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-  }
-
-  if truth, _ := todo.IsIncomplete(todoItem.ID); (truth) {
-    if err = todo.Complete(todoItem.ID); err != nil {
+  if truth, _ := todo.IsIncomplete(key, todoItem.ID); (truth) {
+    if err := todo.Complete(key, todoItem.ID); err != nil {
       http.Error(w, err.Error(), http.StatusInternalServerError)
     }
   } else {
-   if err = todo.Uncomplete(todoItem.ID); err != nil {
+   if err := todo.Uncomplete(key, todoItem.ID); err != nil {
      http.Error(w, err.Error(), http.StatusInternalServerError)
    }
   }
@@ -86,9 +86,10 @@ func DeleteTodoHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   id := r.FormValue("id")
+  key := r.FormValue("key")
   fmt.Println("\n\n",id,"\n\n")
 
-  if err := todo.Delete(id); err != nil {
+  if err := todo.Delete(key, id); err != nil {
     http.Error(w, err.Error(), http.StatusInternalServerError)
   }
 }

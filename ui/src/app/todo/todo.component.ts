@@ -36,9 +36,14 @@ export class TodoComponent implements OnInit {
   }
 
   getAll() {
-    this.todoService.getTodoList().subscribe((data: Todo[]) => {
-      this.activeTodos = data.filter((a) => !a.completed);
-      this.completedTodos = data.filter((a) => a.completed);
+    this.todoService.getTodoList(this.key).subscribe((data: Todo[]) => {
+      if (data != null) {
+        this.activeTodos = data.filter((a) => !a.completed);
+        this.completedTodos = data.filter((a) => a.completed);
+      } else {
+        this.activeTodos = [];
+        this.completedTodos = [];
+      }
     });
   }
 
@@ -50,20 +55,24 @@ export class TodoComponent implements OnInit {
       completed: false
     };
 
-    this.todoService.addTodo(newTodo).subscribe(() => {
+    console.log(newTodo)
+
+    this.todoService.addTodo(this.key, newTodo).subscribe(() => {
       this.getAll();
       this.todoContents = '';
     });
   }
 
   completeTodo(todo: Todo) {
-    this.todoService.completeTodo(todo).subscribe(() => {
+    this.todoService.completeTodo(this.key, todo).subscribe(() => {
       this.getAll();
     });
   }
 
   deleteTodo(todo: Todo) {
-    this.todoService.deleteTodo(todo).subscribe(() => {
+    console.log(todo)
+
+    this.todoService.deleteTodo(this.key, todo).subscribe(() => {
       this.getAll();
     })
   }

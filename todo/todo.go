@@ -1,7 +1,7 @@
 package todo
 
 import(
-  "errors"
+  // "errors"
   "sync"
   "log"
   "fmt"
@@ -14,11 +14,11 @@ import(
 )
 
 var (
-  list []Todo
   mtx sync.RWMutex
   once sync.Once
   db *sql.DB
   savedKey string
+  err error
 )
 
 const (
@@ -35,17 +35,32 @@ func init() {
 }
 
 func InitializeList(key string) {
-  list = []Todo{}
-  if strings.HasPrefix(key, "-") {
-		key = strings.Join(append(strings.Split(key, "")[1:], "n"), "")
-	}
-  savedKey = key
-  var err error
 
-  psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",host, port, user, password, dbname)
+  psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
   db, err = sql.Open("postgres", psqlInfo)
   if err != nil {
     log.Fatalf(err.Error())
+  }
+}
+
+// Todo data structure
+type Todo struct {
+  ID string `json:"id"`
+  Contents string `json:"contents"`
+  Completed bool `json:"completed"`
+}
+
+// return all todo items
+// func Get() []Todo {
+//   fmt.Println(list)
+//   return list
+// }
+
+func Get(key string) []Todo {
+  var list []Todo
+
+  if strings.HasPrefix(key, "-") {
+    key = strings.Join(append(strings.Split(key, "")[1:], "n"), "")
   }
 
   exString := fmt.Sprintf("SELECT 1 FROM %v LIMIT 1", "T" + key)
@@ -66,27 +81,14 @@ func InitializeList(key string) {
         t.Completed = false
       }
 
-      if index, _ := findTodoByID(t.ID); index == -1 {
-        list = append(list, t)
-      }
+      list = append(list, t)
     }
   } else {
     execString := fmt.Sprintf("create table %v(id text, contents text, completed integer);", "T" + key)
     db.Exec(execString)
     list = []Todo{}
   }
-}
 
-// Todo data structure
-type Todo struct {
-  ID string `json:"id"`
-  Contents string `json:"contents"`
-  Completed bool `json:"completed"`
-}
-
-// return all todo items
-func Get() []Todo {
-  fmt.Println(list)
   return list
 }
 
@@ -94,24 +96,30 @@ func Get() []Todo {
 
 // delete table
 func DeleteTable(key string) error {
+  if strings.HasPrefix(key, "-") {
+    key = strings.Join(append(strings.Split(key, "")[1:], "n"), "")
+  }
+
   execString := fmt.Sprintf("drop table %v;", "T" + key)
   _, err := db.Exec(execString)
   return err
 }
 
 // add new todo
-func Add(contents string) string {
+func Add(key string, contents string) string {
+  if strings.HasPrefix(key, "-") {
+    key = strings.Join(append(strings.Split(key, "")[1:], "n"), "")
+  }
+
   t := newTodo(contents)
-  tList := newTodo(strings.ReplaceAll(contents, "''", "'"))
   mtx.Lock()
-  list = append(list, tList)
   var bit int
   if t.Completed {
     bit = 1
   } else {
     bit = 0
   }
-  execString := fmt.Sprintf("INSERT INTO %v (ID, CONTENTS, COMPLETED) VALUES ('%v', '%v', %v)", "T" + savedKey, t.ID, t.Contents, bit)
+  execString := fmt.Sprintf("INSERT INTO %v (ID, CONTENTS, COMPLETED) VALUES ('%v', '%v', %v)", "T" + key, t.ID, t.Contents, bit)
   fmt.Println("\n\n\n", execString, "\n\n\n")
   result, err := db.Exec(execString)
   if err != nil {
@@ -123,44 +131,45 @@ func Add(contents string) string {
 }
 
 // delete todo based on its id
-func Delete(id string) error {
-  index, err := findTodoByID(id)
-  if err != nil {
-    return err
+func Delete(key string, id string) error {
+  if strings.HasPrefix(key, "-") {
+    key = strings.Join(append(strings.Split(key, "")[1:], "n"), "")
   }
-  removeTodoByIndex(index)
-  execString := fmt.Sprintf("DELETE FROM %v WHERE ID = '%v'", "T" + savedKey, id)
+
+  mtx.Lock()
+  execString := fmt.Sprintf("DELETE FROM %v WHERE ID = '%v'", "T" + key, id)
   fmt.Println("\n\n\n", execString, "\n\n\n")
   if _, err := db.Exec(execString); err != nil {
     return err
   }
+  mtx.Unlock()
   return nil
 }
 
 // mark todo as completed
-func Complete(id string) error {
-  index, err := findTodoByID(id)
-  if err != nil {
-    return err
+func Complete(key string, id string) error {
+  if strings.HasPrefix(key, "-") {
+    key = strings.Join(append(strings.Split(key, "")[1:], "n"), "")
   }
-  markCompletedByIndex(index)
-  execString := fmt.Sprintf("UPDATE %v SET COMPLETED = 1 WHERE ID = '%v'", "T" + savedKey, id)
+
+  mtx.Lock()
+  execString := fmt.Sprintf("UPDATE %v SET COMPLETED = 1 WHERE ID = '%v'", "T" + key, id)
   fmt.Println("\n\n\n", execString, "\n\n\n")
   _, err = db.Exec(execString)
   if err != nil {
     return err
   }
+  mtx.Unlock()
   return nil
 }
 
 // mark todo as not completed
-func Uncomplete(id string) error {
-  index, err := findTodoByID(id)
-  if err != nil {
-    return err
+func Uncomplete(key string, id string) error {
+  if strings.HasPrefix(key, "-") {
+    key = strings.Join(append(strings.Split(key, "")[1:], "n"), "")
   }
-  markUncompletedByIndex(index)
-  execString := fmt.Sprintf("UPDATE %v SET COMPLETED = 0 WHERE ID = '%v'", "T" + savedKey, id)
+
+  execString := fmt.Sprintf("UPDATE %v SET COMPLETED = 0 WHERE ID = '%v'", "T" + key, id)
   fmt.Println("\n\n\n", execString, "\n\n\n")
   _, err = db.Exec(execString)
   if err != nil {
@@ -170,16 +179,35 @@ func Uncomplete(id string) error {
 }
 
 // check if already completed
-func IsIncomplete(id string) (bool, error) {
-  index, err := findTodoByID(id)
-  if err != nil {
-    return false, err
+func IsIncomplete(key string, id string) (bool, error) {
+  if strings.HasPrefix(key, "-") {
+    key = strings.Join(append(strings.Split(key, "")[1:], "n"), "")
   }
-  if list[index].Completed == true {
-    return false, nil
-  } else {
-    return true, nil
+
+  exString := fmt.Sprintf("SELECT 1 FROM %v LIMIT 1", "T" + key)
+  if _, err := db.Query(exString); err == nil {
+    exString2 := fmt.Sprintf("SELECT ID, CONTENTS, COMPLETED FROM %v", "T" + key)
+    row, _ := db.Query(exString2)
+
+    for row.Next() {
+
+      var Tid string
+      var Tcontents string
+      var Tcomplete int
+
+      row.Scan(&Tid, &Tcontents, &Tcomplete)
+
+      if Tid == id {
+        if Tcomplete == 1 {
+          return false, nil
+        } else {
+          return true, nil
+        }
+      }
+    }
   }
+
+  return true, err
 }
 
 //// private functions
@@ -189,37 +217,39 @@ func newTodo(contents string) Todo {
   return Todo {ID: xid.New().String(), Contents: contents, Completed: false,}
 }
 
-// find todo based on its unique ID
-func findTodoByID(id string) (int, error) {
-  for i, t := range list {
-    if isMatching(t.ID, id) {
-      return i, nil
-    }
-  }
-
-  return -1, errors.New("Couldn't find given Todo in the list.")
-}
-
-// remove todo based on its index
-func removeTodoByIndex(index int) {
-  mtx.Lock()
-  list = append(list[:index], list[index+1:]...)
-  mtx.Unlock()
-}
-
-// mark a todo completed based on its index
-func markCompletedByIndex(index int) {
-  mtx.Lock()
-  list[index].Completed = true
-  mtx.Unlock()
-}
-
-// mark a todo not completed based on its index
-func markUncompletedByIndex(index int) {
-  mtx.Lock()
-  list[index].Completed = false
-  mtx.Unlock()
-}
+// // find todo based on its unique ID
+// func findTodoByID(key string, id string) (int, error) {
+//   list := Get(key)
+//
+//   for i, t := range list {
+//     if isMatching(t.ID, id) {
+//       return i, nil
+//     }
+//   }
+//
+//   return -1, errors.New("Couldn't find given Todo in the list.")
+// }
+//
+// // remove todo based on its index
+// func removeTodoByIndex(index int) {
+//   mtx.Lock()
+//   list = append(list[:index], list[index+1:]...)
+//   mtx.Unlock()
+// }
+//
+// // mark a todo completed based on its index
+// func markCompletedByIndex(index int) {
+//   mtx.Lock()
+//   list[index].Completed = true
+//   mtx.Unlock()
+// }
+//
+// // mark a todo not completed based on its index
+// func markUncompletedByIndex(index int) {
+//   mtx.Lock()
+//   list[index].Completed = false
+//   mtx.Unlock()
+// }
 
 // check if matching
 func isMatching(id1 string, id2 string) bool {
